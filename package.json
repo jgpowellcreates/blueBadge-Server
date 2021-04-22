@@ -1,0 +1,20 @@
+{
+  "name": "teamstore-server",
+  "version": "1.0.0",
+  "description": "This is an EFA Blue Badge project by team Freddy-vs-JSON. Ecommerce store (replica) application to display knowledge of front-end (client) and back-end (server) coding practices.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "pg": "^8.6.0",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.6.2"
+  }
+}
