@@ -12,8 +12,6 @@ router.get("/test", (req,res) => {
 
 router.post('/create', async (req,res) => {
     const {productName, price, description, stock} = req.body;
-    console.log('AHA!')
-    console.log(req);
     // const { id } = req.user;
     try{
         const newProduct = await ProductModel.create({
@@ -52,6 +50,12 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: err });
     }
 })
+
+/*
+LATER WE WILL ADD STORE KEYS AND THERE WILL BE AN ENDPOINT THAT GETS ALL THE PRODUCTS FROM A STORE
+
+USER ID, STOREOWNER, AND STORE ID WILL ALL BE THE SAME NUMBER
+*/
 
 /*
 ============================================================
