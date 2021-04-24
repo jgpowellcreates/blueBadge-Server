@@ -39,7 +39,7 @@ router.post('/register', async (req,res) => {
             message: "User Registered!",
             user: newUser,
             token
-        }) 
+        }); 
     } catch(err) {
       if(err instanceof UniqueConstraintError) {
           res.status(409).json({
@@ -101,5 +101,50 @@ router.post('/login', async (req,res) => {
         })
     }
 })
+
+router.put("/update/:id", async (req,res) =>{
+    
+    const {username, password} = req.body;
+    const userId = req.user.id;
+
+    const query = {
+        where: {
+            id: userId
+        }
+    };
+
+    const updatedId = {
+        username: username,
+        password: password
+    };
+
+    try{
+        const update = await UserModel.update(updatedId, query);
+        res.status(200).json(update);
+    } catch (err) {
+        res.status(500).json({error:err})
+    }
+});
+
+
+router.delete("/delete/:id", async (req,res) => {
+
+    const ownerId = req.user.id;
+    
+    try {
+        const query = {
+            where: {
+                id: ownerId
+            }
+        };
+
+        await UserModel.destroy(query);
+        res.status(200).json({message: "User Removed"});
+    }catch (err){
+        res.status(500).json({error:err});
+    }
+})
+
+
 
 module.exports = router;
