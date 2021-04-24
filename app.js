@@ -7,6 +7,7 @@ const dbConnection = require("./db");
 app.use(Express.json());
 app.use("/user", controllers.userController);
 app.use("/product", controllers.productController);
+app.use("/store", controllers.storeController);
 
 dbConnection.authenticate()
     .then(() => dbConnection.sync())
