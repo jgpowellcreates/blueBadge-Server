@@ -23,17 +23,13 @@ const User = db.define("user", {
     lastName: {
         type: DataTypes.STRING,
         allowNull: false,
-    }/* ,
+    } ,
     shoppingCartContents: {
-        type: DataTypes.ARRAY,
+        type: DataTypes.ARRAY(DataTypes.INTEGER),
         allowNull: true,
-    },
-    storeInfo: {
-    },
-    storeContents: {
-        type: DataTypes.ARRAY,
-        allowNull: true,
-    } */
+    //},
+   // storeID - let this be foreign key created by new store endpoint
+    }
 });
 
 module.exports = User;
