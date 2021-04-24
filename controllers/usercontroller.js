@@ -102,10 +102,10 @@ router.post('/login', async (req,res) => {
     }
 })
 
-router.put("/update/:id", async (req,res) =>{
+router.put("/update/:userId", async (req,res) =>{
     
-    const {username, password} = req.body;
-    const userId = req.user.id;
+    const {username, email, password, firstName, lastName} = req.body;
+    const { userId } = req.params;
 
     const query = {
         where: {
@@ -113,23 +113,26 @@ router.put("/update/:id", async (req,res) =>{
         }
     };
 
-    const updatedId = {
-        username: username,
-        password: password
+    const updatedUser = {
+        username,
+        email, 
+        password: bcrypt.hashSync(password, 13),
+        firstName,
+        lastName
     };
 
     try{
-        const update = await UserModel.update(updatedId, query);
-        res.status(200).json(update);
+        const update = await UserModel.update(updatedUser, query);
+        res.status(200).json(updatedUser);
     } catch (err) {
         res.status(500).json({error:err})
     }
 });
 
 
-router.delete("/delete/:id", async (req,res) => {
+router.delete("/delete/:ownerId", async (req,res) => {
 
-    const ownerId = req.user.id;
+    const { ownerId } = req.params;
     
     try {
         const query = {
