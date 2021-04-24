@@ -9,10 +9,15 @@ router.get('/test', (req,res) => {
     res.send("This is my user test route.")
 })
 
+/*
+============================================================
+/user/regiser POST (Create a New User)
+============================================================
+*/
+
 router.post('/register', async (req,res) => {
     const {email, username, password, firstName, lastName} = req.body; //revisit when we have modals
     try{
-        //console.log(req.body);
         const newUser = await UserModel.create({
             email,
             username,
@@ -27,7 +32,6 @@ router.post('/register', async (req,res) => {
             {
                 expiresIn: 60 * 60 * 24
             }
-
         )
 
         //console.log("new user", newUser, email, username);
@@ -39,17 +43,24 @@ router.post('/register', async (req,res) => {
     } catch(err) {
       if(err instanceof UniqueConstraintError) {
           res.status(409).json({
-              message: "Email already in use." //Username already in use
+              message: "Email/Username already in use." //Username already in use
           })
       } else {
         res.status(500).json({
             message: "Failed to register",
-            error: err
+            error: err,
+            messageOrigin: "userController.js"
         })
     
     } 
     }
 })
+
+/*
+============================================================
+/user/login POST (Find an Existing User)
+============================================================
+*/
 
 router.post('/login', async (req,res) => {
     let {username, password} = req.body;
@@ -84,7 +95,7 @@ router.post('/login', async (req,res) => {
                 message: "Error: username."
             })
         }
-    } catch (error) {
+    } catch (err) {
         res.status(500).json({
             error: `Failed to login user. ${err}`
         })
