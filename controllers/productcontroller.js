@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { ProductModel } = require('../models');
+const { ProductModel } = require("../models");
 
 router.get("/test", (req,res) => {
     res.send("This is my product test route");
@@ -10,18 +10,20 @@ router.get("/test", (req,res) => {
 /product/create POST (This creates a new product)
 ============================================================
 */
+//When adding a new product to your store, button must pass in Store Id (to associate product)
 
-router.post('/create', async (req,res) => {
+router.post('/create/:storeId', async (req,res) => {
     const {productName, price, description, stock} = req.body;
-    // const { id } = req.user;
+
+    const { storeId } = req.params;
     try{
         const newProduct = await ProductModel.create({
             productName,
             price,
             description,
             stock,
-            storeOwner: "128", //eventually will contain destructured id
-            imageURL: "https://static01.nyt.com/images/2018/05/03/us/03spongebob_xp/03spongebob_xp-videoSixteenByNineJumbo1600.jpg"
+            imageURL: "https://static01.nyt.com/images/2018/05/03/us/03spongebob_xp/03spongebob_xp-videoSixteenByNineJumbo1600.jpg",
+            storeId
         });
 
         res.status(201).json({
@@ -51,6 +53,7 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: err });
     }
 })
+
 
 /*
 LATER WE WILL ADD STORE KEYS AND THERE WILL BE AN ENDPOINT THAT GETS ALL THE PRODUCTS FROM A STORE

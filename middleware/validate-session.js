@@ -3,6 +3,7 @@ const {UserModel} = require("../models");
 
 const validateSession = async (req, res, next) => {
     if (req.method === "OPTIONS"){
+        console.log("From validation.js", req)
         return next();
     } else if (req.headers.authorization) {
         const{authorization} = req.headers;
@@ -19,13 +20,13 @@ const validateSession = async (req, res, next) => {
                 req.user = foundUser;
                 next()
             } else {
-                res.status(400).send({message: "Not authorized"})
+                res.status(400).send({message: "Not authorized", messageOrigin: "validate-session.js"})
             }
         } else {
-            res.status(401).send({message: "Invalid token!"})
+            res.status(401).send({message: "Invalid token!", messageOrigin: "validate-session.js"})
         }
     } else {
-        res.status(403).send({message: "Forbidden"})
+        res.status(403).send({message: "Forbidden", messageOrigin: "validate-session.js"})
     }
     
 }
