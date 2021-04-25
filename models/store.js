@@ -13,9 +13,6 @@ const Store = db.define("store", {
     },
     storeDescription: {
         type: DataTypes.STRING,
-    },
-    productsArray: {
-        type: DataTypes.ARRAY(DataTypes.INTEGER),
     }
 })
 

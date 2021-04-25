@@ -1,38 +1,47 @@
 const router = require('express').Router();
 const validateJWT = require("../middleware/validate-session");
 const { UniqueConstraintError } = require("sequelize/lib/errors")
-const {StoreModel} = require("../models");
+const {StoreModel, ProductModel} = require("../models");
+const Store = require('../models/store');
 
 /*
-============================================================
-/store/:id GET (Finds A Store's Info)
-============================================================
+====================================================================
+/store/:storeId GET (This displays all of a store's info & products)
+====================================================================
+
+This looks for a parameter of a storeId to return:
+ - store info (where the store's Id == storeId)
+ - products that belong to storeId
+
+We should be able to keep this endpoint consistent for customers AND retailers by applying logic that checks if:
+store's userId == userId carried by token
 */
 
-router.get("/:id", async (req, res) => {
-    const {id} = req.params;
-    console.log(id);
+router.get('/:storeId', async (req, res) => {
+    let { storeId } = req.params;
+
     try {
-        const USER = await StoreModel.findOne({
+        const STORE = await StoreModel.findOne({
             where: {
-                userId: id
+                id: storeId
+            }
+        })
+        const PRODUCT = await ProductModel.findAll({
+            where: {
+                storeId
             }
         });
+
         res.status(200).json({
-            storeName: USER.storeName,
-            storeLocation: USER.storeLocation,
-            storeDescription: USER.storeDescription,
-            productsArray: USER.productsArray
-        })
+            storeName: STORE.storeName,
+            storeLocation: STORE.storeLocation,
+            storeDescription: STORE.storeDescription,
+            products: PRODUCT
+        });
     } catch (err) {
-        res.status(500).json({
-            error: err,
-            messageOrigin: "storeController",
-            returnedId: id
-        })
+        res.status(500).json({ error: err });
     }
 })
-
 
 /*
 ============================================================
@@ -63,5 +72,46 @@ router.post("/create", validateJWT, async (req, res) => {
         }
     }
 });
+
+
+/*
+============================================================
+/store/:id PUT (This updates a store's information)
+============================================================
+*/
+
+router.put('/:storeId', validateJWT, async (req, res) => {
+    const {storeName, storeLocation, storeDescription} = req.body;
+    const userId = req.user.id;
+    const {storeId} = req.params;
+    console.log("I made it through var declaration")
+
+    const query = {
+        where: {
+            id: storeId,
+            userId
+        }
+    }
+
+    console.log("Query---> ",query)
+
+    const updatedStore = {
+        storeName,
+        storeLocation,
+        storeDescription
+    }
+    console.log("I declared my updated store", updatedStore)
+
+    try {
+        const updateResponse = await StoreModel.update(updatedStore, query);
+        res.status(200).json({
+            message: "You've updated your store info successfully!",
+            updateResponse,
+            updatedStore
+        });
+    } catch (err) {
+        res.status(404).json({ error: err });
+    }
+})
 
 module.exports = router;

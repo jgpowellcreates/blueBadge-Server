@@ -10,7 +10,7 @@ app.use("/product", controllers.productController);
 app.use("/store", controllers.storeController);
 
 dbConnection.authenticate()
-    .then(() => dbConnection.sync())
+    .then(() => dbConnection.sync({}))
     .then(() => {
         app.listen(process.env.PORT, () => console.log(`[Server]: App is listening on ${process.env.PORT}`));
     })

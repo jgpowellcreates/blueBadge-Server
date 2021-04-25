@@ -13,5 +13,5 @@ module.exports = {
 StoreModel.belongsTo(UserModel, {foreignKey: {allowNull: false}, onDelete: 'CASCADE'});
 UserModel.hasOne(StoreModel, {foreignKey: {allowNull: false}, onDelete: 'CASCADE'});
 
-ProductModel.belongsTo(StoreModel);
-StoreModel.hasMany(ProductModel);
+ProductModel.belongsTo(StoreModel, {foreignKey: {allowNull: false}, onDelete: 'CASCADE'});
+StoreModel.hasMany(ProductModel, {foreignKey: {allowNull: false}, onDelete: 'CASCADE'});
