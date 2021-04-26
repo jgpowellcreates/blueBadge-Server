@@ -1,4 +1,5 @@
 const router = require('express').Router();
+let validateJWT = require('../middleware/validate-session');
 const { ProductModel } = require("../models");
 
 router.get("/test", (req,res) => {
@@ -12,7 +13,7 @@ router.get("/test", (req,res) => {
 */
 //When adding a new product to your store, button must pass in Store Id (to associate product)
 
-router.post('/create/:storeId', async (req,res) => {
+router.post('/create/:storeId', validateJWT, async (req,res) => {
     const {productName, price, description, stock} = req.body;
 
     const { storeId } = req.params;
@@ -88,7 +89,7 @@ router.get('/:productID', async (req, res) => {
 ============================================================
 */
 
-router.put('/:productID', async (req, res) => {
+router.put('/:productID', validateJWT, async (req, res) => {
     const {productName, price, description, stock} = req.body;
     let { productID } = req.params;
     // let { userID } = req.user;
@@ -121,7 +122,7 @@ router.put('/:productID', async (req, res) => {
 ============================================================
 */
 
-router.delete('/:productID', async (req, res) => {
+router.delete('/:productID', validateJWT, async (req, res) => {
     let { productID } = req.params;
     // { userID } = req.user
 
