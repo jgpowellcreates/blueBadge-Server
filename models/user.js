@@ -23,14 +23,10 @@ const User = db.define("user", {
     password: {
         type: DataTypes.STRING,
         allowNull: false,
-    }, /* ,
-    storeId: {
-        type: DataTypes.STRING,
-    } */
-    // shoppingCartContents: {
-    //     type: DataTypes.ARRAY(DataTypes.INTEGER),
-    //     allowNull: true,
-    //},
+    },
+    shoppingCartContents: {
+        type: DataTypes.ARRAY(DataTypes.INTEGER),
+    },
 });
 
 
