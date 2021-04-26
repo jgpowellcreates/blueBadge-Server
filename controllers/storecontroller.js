@@ -4,18 +4,52 @@ const { UniqueConstraintError } = require("sequelize/lib/errors")
 const {StoreModel, ProductModel} = require("../models");
 const Store = require('../models/store');
 
+
+/*
+====================================================================
+/mystore/ GET (This displays all of a store's info & products)
+====================================================================
+
+This looks for a store that belongs to the logged in user
+*/
+
+router.get('/mystore', validateJWT, async (req, res) => {
+    const userId = req.user.id;
+
+    try {
+        const STORE = await StoreModel.findOne({
+            where: {
+                userId
+            }
+        })
+
+        let storeId = STORE.id
+
+        const PRODUCT = await ProductModel.findAll({
+            where: {
+                storeId
+            }
+        });
+
+        res.status(200).json({
+            storeName: STORE.storeName,
+            storeLocation: STORE.storeLocation,
+            storeDescription: STORE.storeDescription,
+            products: PRODUCT
+        });
+    } catch (err) {
+        res.status(500).json({
+            messOrigin: "storecontroller",
+            error: err });
+    }
+})
+
 /*
 ====================================================================
 /store/:storeId GET (This displays all of a store's info & products)
 ====================================================================
 
-This looks for a parameter of a storeId to return:
- - store info (where the store's Id == storeId)
- - products that belong to storeId
-
-We should be able to keep this endpoint consistent for customers AND retailers by applying logic that checks if:
-store's userId == userId carried by token
-*/
+//THIS IS A STRETCH GOAL. THIS WOULD ANYONE PULL UP A STORE'S INFO AND PRODUCTS BY STOREID.
 
 router.get('/:storeId', async (req, res) => {
     let { storeId } = req.params;
@@ -42,6 +76,8 @@ router.get('/:storeId', async (req, res) => {
         res.status(500).json({ error: err });
     }
 })
+
+
 
 /*
 ============================================================
@@ -111,6 +147,32 @@ router.put('/:storeId', validateJWT, async (req, res) => {
         });
     } catch (err) {
         res.status(404).json({ error: err });
+    }
+})
+
+/*
+============================================================
+/store/:id DELETE (Delete's a User's Store)
+============================================================
+*/
+
+router.delete('/:storeId', validateJWT, async (req, res) => {
+    const userId = req.user.id;
+    const { storeId } = req.params;
+
+    try {
+        const query = {
+            where: {
+                id: storeId,
+                userId
+            }
+        };
+        console.log(query)
+
+        await StoreModel.destroy(query);
+        res.status(200).json({message: "You store was successfully deleted"});
+    } catch (err) {
+        res.status(500).json({error: err});
     }
 })
 
