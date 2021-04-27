@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 const { UniqueConstraintError } = require("sequelize/lib/errors")
 
-router.get('/test', (req,res) => {
+router.get('/test', (req, res) => {
     res.send("This is my user test route.")
 })
 
@@ -15,19 +15,20 @@ router.get('/test', (req,res) => {
 ============================================================
 */
 
-router.post('/register', async (req,res) => {
-    const {email, username, password, firstName, lastName} = req.body; //revisit when we have modals
-    try{
+router.post('/register', async (req, res) => {
+    const { email, username, password, firstName, lastName } = req.body; //revisit when we have modals
+    try {
         const newUser = await UserModel.create({
             email,
             username,
             firstName,
             lastName,
-            password: bcrypt.hashSync(password, 13)
+            password: bcrypt.hashSync(password, 13),
+            shoppingCartContents: []
         });
 
         const token = jwt.sign(
-            {id: newUser.id},
+            { id: newUser.id },
             process.env.JWT_SECRET,
             {
                 expiresIn: 60 * 60 * 24
@@ -62,8 +63,8 @@ router.post('/register', async (req,res) => {
 ============================================================
 */
 
-router.post('/login', async (req,res) => {
-    let {username, password} = req.body;
+router.post('/login', async (req, res) => {
+    let { username, password } = req.body;
     try {
         let loginUser = await UserModel.findOne({
             where: {
@@ -72,24 +73,24 @@ router.post('/login', async (req,res) => {
         })
         if (loginUser) {
             let passwordComparison = await bcrypt.compare(password, loginUser.password); //need to add bcrypt
-            
-             if (passwordComparison) {
-                 const token = jwt.sign(
-                     {id: loginUser.id}, 
-                     process.env.JWT_SECRET, 
-                     {expiresIn: 60 * 60 * 24}
-                     )
-                 
-                 res.status(200).json({
-                     message: "User successfully logged in!",
-                     user: loginUser,
-                     token
-                 })
-             } else {
-                 res.status(401).json({
-                     message: "Error: password."
-                 })
-             }
+
+            if (passwordComparison) {
+                const token = jwt.sign(
+                    { id: loginUser.id },
+                    process.env.JWT_SECRET,
+                    { expiresIn: 60 * 60 * 24 }
+                )
+
+                res.status(200).json({
+                    message: "User successfully logged in!",
+                    user: loginUser,
+                    token
+                })
+            } else {
+                res.status(401).json({
+                    message: "Error: password."
+                })
+            }
         } else {
             res.status(401).json({
                 message: "Error: username."
@@ -102,9 +103,15 @@ router.post('/login', async (req,res) => {
     }
 })
 
-router.put("/update/:userId", async (req,res) =>{
-    
-    const {username, email, password, firstName, lastName} = req.body;
+/*
+============================================================
+/user/update PUT (Update an existing user)
+============================================================
+*/
+
+router.put("/update/:userId", async (req, res) => {
+
+    const { username, email, firstName, lastName } = req.body;
     const { userId } = req.params;
 
     const query = {
@@ -115,12 +122,28 @@ router.put("/update/:userId", async (req,res) =>{
 
     const updatedUser = {
         username,
-        email, 
-        password: bcrypt.hashSync(password, 13),
+        email,
         firstName,
         lastName
     };
+  
+    try {
+        const update = await UserModel.update(updatedUser, query);
+        res.status(200).json(updatedUser);
+    } catch (err) {
+        res.status(500).json({ error: err })
+    }
+});
 
+/*
+============================================================
+/user/delete/:ownerId DELETE (Delete an Existing User)
+============================================================
+*/
+
+router.delete("/delete/:ownerId", async (req, res) => {
+
+    const { ownerId } = req.params;
     try{
         const update = await UserModel.update(updatedUser, query);
         res.status(200).json(updatedUser);
@@ -133,7 +156,7 @@ router.put("/update/:userId", async (req,res) =>{
 router.delete("/delete/:ownerId", async (req,res) => {
 
     const { ownerId } = req.params;
-    
+
     try {
         const query = {
             where: {
@@ -142,12 +165,77 @@ router.delete("/delete/:ownerId", async (req,res) => {
         };
 
         await UserModel.destroy(query);
-        res.status(200).json({message: "User Removed"});
-    }catch (err){
-        res.status(500).json({error:err});
+        res.status(200).json({ message: "User Removed" });
+    } catch (err) {
+        res.status(500).json({ error: err });
     }
 })
 
+/*
+============================================================
+/user/addtocart/:userID POST (Adds a productID to the shoppingcartArray of a User)
+============================================================
+*/
 
+router.put("/addtocart/:userID", async (req, res) => {
+    const { userID } = req.params;
+    const { productID } = req.body;
+    
+    let currentUser = await UserModel.findOne({
+        where: {
+            id: userID
+        }
+    })
+
+    const currentArray = currentUser.shoppingCartContents;
+
+    currentArray.push(productID);
+
+    console.log(currentArray)
+
+    const query = {
+        where: {
+            id: userID
+        }
+    };
+
+    const updatedUser = {
+        shoppingCartContents: currentArray
+    };
+
+    try {
+        const update = await UserModel.update(updatedUser, query);
+        res.status(200).json(updatedUser);
+    } catch (err) {
+        res.status(500).json({ error: err })
+    }
+});
+
+/*
+============================================================
+/user/checkout/:userID POST (Adds a productID to the shoppingcartArray of a User)
+============================================================
+*/
+
+router.put("/checkout/:userID", async (req, res) => {
+    const { userID } = req.params;
+
+    const query = {
+        where: {
+            id: userID
+        }
+    };
+
+    const updatedUser = {
+        shoppingCartContents: []
+    };
+
+    try {
+        const update = await UserModel.update(updatedUser, query);
+        res.status(200).json(updatedUser);
+    } catch (err) {
+        res.status(500).json({ error: err })
+    }
+});
 
 module.exports = router;
