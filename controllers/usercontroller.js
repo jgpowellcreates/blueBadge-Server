@@ -226,4 +226,27 @@ router.put("/checkout/:userID", async (req, res) => {
     }
 });
 
+/*
+============================================================
+/user/returnshoppingcart/:userID GET (Returns the shopping cart of the user)
+============================================================
+*/
+
+router.get("/returnshoppingcart/:userID", async (req, res) => {
+    const { userID } = req.params;
+
+    try {
+        let currentUser = await UserModel.findOne({
+            where: {
+                id: userID
+            }
+        })
+    
+        const shoppingCartArray = currentUser.shoppingCartContents;
+        res.status(200).json({ shoppingCartArray: shoppingCartArray })
+    } catch (err) {
+        res.status(500).json({ error: err })
+    }
+});
+
 module.exports = router;
