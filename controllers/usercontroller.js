@@ -141,18 +141,6 @@ router.put("/update/:userId", async (req, res) => {
 ============================================================
 */
 
-router.delete("/delete/:ownerId", async (req, res) => {
-
-    const { ownerId } = req.params;
-    try{
-        const update = await UserModel.update(updatedUser, query);
-        res.status(200).json(updatedUser);
-    } catch (err) {
-        res.status(500).json({error:err})
-    }
-});
-
-
 router.delete("/delete/:ownerId", async (req,res) => {
 
     const { ownerId } = req.params;
