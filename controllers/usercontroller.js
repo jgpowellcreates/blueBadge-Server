@@ -102,6 +102,12 @@ router.post('/login', async (req,res) => {
     }
 })
 
+/*
+=======================
+*** UPDATE USER ***
+=======================
+*/
+
 router.put("/update/:userId", async (req,res) =>{
     
     const {username, email, password, firstName, lastName} = req.body;
@@ -123,11 +129,17 @@ router.put("/update/:userId", async (req,res) =>{
 
     try{
         const update = await UserModel.update(updatedUser, query);
-        res.status(200).json(updatedUser);
+        res.status(200).json({message: "User Updated!"});
     } catch (err) {
         res.status(500).json({error:err})
     }
 });
+
+/*
+=======================
+*** DELETE USER ***
+=======================
+*/
 
 
 router.delete("/delete/:ownerId", async (req,res) => {
