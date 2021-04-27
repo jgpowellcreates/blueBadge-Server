@@ -4,7 +4,8 @@
   "description": "This is an EFA Blue Badge project by team Freddy-vs-JSON. Ecommerce store (replica) application to display knowledge of front-end (client) and back-end (server) coding practices.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "author": "",
   "license": "ISC",
