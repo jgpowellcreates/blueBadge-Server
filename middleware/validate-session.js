@@ -26,7 +26,7 @@ const validateSession = async (req, res, next) => {
             res.status(401).send({message: "Invalid token!", messageOrigin: "validate-session.js"})
         }
     } else {
-        res.status(403).send({message: "Forbidden", messageOrigin: "validate-session.js"})
+        res.status(403).send({message: "Forbidden"})
     }
     
 }

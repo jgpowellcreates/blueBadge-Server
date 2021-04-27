@@ -40,20 +40,20 @@ router.post('/register', async (req, res) => {
             message: "User Registered!",
             user: newUser,
             token
-        });
-    } catch (err) {
-        if (err instanceof UniqueConstraintError) {
-            res.status(409).json({
-                message: "Email/Username already in use." //Username already in use
-            })
-        } else {
-            res.status(500).json({
-                message: "Failed to register",
-                error: err,
-                messageOrigin: "userController.js"
-            })
-
-        }
+        }); 
+    } catch(err) {
+      if(err instanceof UniqueConstraintError) {
+          res.status(409).json({
+              message: "Email/Username already in use." //Username already in use
+          })
+      } else {
+        res.status(500).json({
+            message: "Failed to register",
+            error: err,
+            messageOrigin: "userController.js"
+        })
+    
+    } 
     }
 })
 
@@ -126,7 +126,7 @@ router.put("/update/:userId", async (req, res) => {
         firstName,
         lastName
     };
-
+  
     try {
         const update = await UserModel.update(updatedUser, query);
         res.status(200).json(updatedUser);
@@ -142,6 +142,18 @@ router.put("/update/:userId", async (req, res) => {
 */
 
 router.delete("/delete/:ownerId", async (req, res) => {
+
+    const { ownerId } = req.params;
+    try{
+        const update = await UserModel.update(updatedUser, query);
+        res.status(200).json(updatedUser);
+    } catch (err) {
+        res.status(500).json({error:err})
+    }
+});
+
+
+router.delete("/delete/:ownerId", async (req,res) => {
 
     const { ownerId } = req.params;
 
