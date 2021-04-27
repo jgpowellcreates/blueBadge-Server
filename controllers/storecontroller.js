@@ -48,7 +48,7 @@ router.get('/mystore', validateJWT, async (req, res) => {
 ====================================================================
 /store/:storeId GET (This displays all of a store's info & products)
 ====================================================================
-
+*/
 //THIS IS A STRETCH GOAL. THIS WOULD ANYONE PULL UP A STORE'S INFO AND PRODUCTS BY STOREID.
 
 router.get('/:storeId', async (req, res) => {
