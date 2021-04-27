@@ -26,6 +26,8 @@ router.post('/register', async (req, res) => {
             shoppingCartContents: []
         });
 
+        console.log('after the new model')
+
         const token = jwt.sign(
             { id: newUser.id },
             process.env.JWT_SECRET,
@@ -39,20 +41,19 @@ router.post('/register', async (req, res) => {
             message: "User Registered!",
             user: newUser,
             token
-        }); 
-    } catch(err) {
-      if(err instanceof UniqueConstraintError) {
-          res.status(409).json({
-              message: "Email/Username already in use." //Username already in use
-          })
-      } else {
-        res.status(500).json({
-            message: "Failed to register",
-            error: err,
-            messageOrigin: "userController.js"
-        })
-    
-    } 
+        });
+    } catch (err) {
+        if (err instanceof UniqueConstraintError) {
+            res.status(409).json({
+                message: "Email/Username already in use." //Username already in use
+            })
+        } else {
+            res.status(500).json({
+                message: "Failed to register",
+                error: err,
+                messageOrigin: "userController.js"
+            })
+        }
     }
 })
 
@@ -125,7 +126,7 @@ router.put("/update/:userId", async (req, res) => {
         firstName,
         lastName
     };
-  
+
     try {
         const update = await UserModel.update(updatedUser, query);
         res.status(200).json(updatedUser);
@@ -140,7 +141,7 @@ router.put("/update/:userId", async (req, res) => {
 ============================================================
 */
 
-router.delete("/delete/:ownerId", async (req,res) => {
+router.delete("/delete/:ownerId", async (req, res) => {
 
     const { ownerId } = req.params;
 
@@ -167,7 +168,7 @@ router.delete("/delete/:ownerId", async (req,res) => {
 router.put("/addtocart/:userID", async (req, res) => {
     const { userID } = req.params;
     const { productID } = req.body;
-    
+
     let currentUser = await UserModel.findOne({
         where: {
             id: userID
