@@ -3,6 +3,7 @@ const { UserModel } = require("../models");
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 const { UniqueConstraintError } = require("sequelize/lib/errors")
+const validateJWT = require('../middleware/validate-session')
 
 router.get('/test', (req, res) => {
     res.send("This is my user test route.")
@@ -165,8 +166,8 @@ router.delete("/delete/:ownerId", async (req, res) => {
 ============================================================
 */
 
-router.put("/addtocart/:userID", async (req, res) => {
-    const { userID } = req.params;
+router.put("/addtocart/", validateJWT, async (req, res) => {
+    const { userID } = req.user.id;
     const { productID } = req.body;
 
     let currentUser = await UserModel.findOne({
@@ -205,8 +206,8 @@ router.put("/addtocart/:userID", async (req, res) => {
 ============================================================
 */
 
-router.put("/checkout/:userID", async (req, res) => {
-    const { userID } = req.params;
+router.put("/checkout/", validateJWT, async (req, res) => {
+    const { userID } = req.user.id;
 
     const query = {
         where: {
@@ -232,8 +233,8 @@ router.put("/checkout/:userID", async (req, res) => {
 ============================================================
 */
 
-router.get("/returnshoppingcart/:userID", async (req, res) => {
-    const { userID } = req.params;
+router.get("/returnshoppingcart/", validateJWT, async (req, res) => {
+    const { userID } = req.user.id;
 
     try {
         let currentUser = await UserModel.findOne({
