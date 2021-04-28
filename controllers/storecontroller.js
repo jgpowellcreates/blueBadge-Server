@@ -32,6 +32,7 @@ router.get('/mystore', validateJWT, async (req, res) => {
         });
 
         res.status(200).json({
+            userId: STORE.userId,
             storeName: STORE.storeName,
             storeLocation: STORE.storeLocation,
             storeDescription: STORE.storeDescription,
