@@ -167,7 +167,7 @@ router.delete("/delete/:ownerId", async (req, res) => {
 */
 
 router.put("/addtocart/", validateJWT, async (req, res) => {
-    const { userID } = req.user.id;
+    const userID = req.user.id;
     const { productID } = req.body;
 
     let currentUser = await UserModel.findOne({
@@ -207,7 +207,7 @@ router.put("/addtocart/", validateJWT, async (req, res) => {
 */
 
 router.put("/checkout/", validateJWT, async (req, res) => {
-    const { userID } = req.user.id;
+    const userID = req.user.id;
 
     const query = {
         where: {
@@ -234,7 +234,7 @@ router.put("/checkout/", validateJWT, async (req, res) => {
 */
 
 router.get("/returnshoppingcart/", validateJWT, async (req, res) => {
-    const { userID } = req.user.id;
+    const userID = req.user.id;
 
     try {
         let currentUser = await UserModel.findOne({
