@@ -1,9 +1,9 @@
 const router = require('express').Router();
-const { validateSession } = require('../middleware');
 const { UserModel } = require("../models");
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 const { UniqueConstraintError } = require("sequelize/lib/errors")
+const validateJWT = require('../middleware/validate-session')
 
 router.get('/test', (req, res) => {
     res.send("This is my user test route.")
@@ -166,8 +166,8 @@ router.delete("/delete/:ownerId", async (req, res) => {
 ============================================================
 */
 
-router.put("/addtocart/:userID", async (req, res) => {
-    const { userID } = req.params;
+router.put("/addtocart/", validateJWT, async (req, res) => {
+    const { userID } = req.user.id;
     const { productID } = req.body;
 
     let currentUser = await UserModel.findOne({
@@ -206,8 +206,8 @@ router.put("/addtocart/:userID", async (req, res) => {
 ============================================================
 */
 
-router.put("/checkout/:userID", async (req, res) => {
-    const { userID } = req.params;
+router.put("/checkout/", validateJWT, async (req, res) => {
+    const { userID } = req.user.id;
 
     const query = {
         where: {
@@ -222,6 +222,29 @@ router.put("/checkout/:userID", async (req, res) => {
     try {
         const update = await UserModel.update(updatedUser, query);
         res.status(200).json(updatedUser);
+    } catch (err) {
+        res.status(500).json({ error: err })
+    }
+});
+
+/*
+============================================================
+/user/returnshoppingcart/:userID GET (Returns the shopping cart of the user)
+============================================================
+*/
+
+router.get("/returnshoppingcart/", validateJWT, async (req, res) => {
+    const { userID } = req.user.id;
+
+    try {
+        let currentUser = await UserModel.findOne({
+            where: {
+                id: userID
+            }
+        })
+    
+        const shoppingCartArray = currentUser.shoppingCartContents;
+        res.status(200).json({ shoppingCartArray: shoppingCartArray })
     } catch (err) {
         res.status(500).json({ error: err })
     }
